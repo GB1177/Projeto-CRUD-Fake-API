@@ -1,0 +1,38 @@
+<article class="card" data-testid="product-card">
+  <div class="image-frame">
+    <img [src]="product().image" [alt]="product().title" loading="lazy" />
+  </div>
+
+  <div class="content">
+    <p class="category" data-testid="product-card-category">
+      {{ product().category }}
+    </p>
+    <h2 data-testid="product-card-title">{{ product().title }}</h2>
+    <p class="price" data-testid="product-card-price">
+      {{ product().price | currency: 'USD' : 'symbol' : '1.2-2' }}
+    </p>
+
+    @if (product().rating; as rating) {
+      <p class="rating" data-testid="product-card-rating">
+        {{ rating.rate | number: '1.1-1' }} / 5 · {{ rating.count }} avaliações
+      </p>
+    }
+  </div>
+
+  <footer>
+    <button type="button" (click)="view.emit(product())" data-testid="view-product-button">
+      Ver
+    </button>
+    <button type="button" (click)="edit.emit(product())" data-testid="edit-product-button">
+      Editar
+    </button>
+    <button
+      class="danger"
+      type="button"
+      (click)="delete.emit(product())"
+      data-testid="delete-product-button"
+    >
+      Excluir
+    </button>
+  </footer>
+</article>

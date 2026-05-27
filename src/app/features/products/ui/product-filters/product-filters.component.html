@@ -1,0 +1,30 @@
+<section class="filters" data-testid="product-filters">
+  <label class="field">
+    <span>Buscar produto</span>
+    <input
+      type="search"
+      [value]="searchTerm()"
+      (input)="onSearchTermInput($event)"
+      placeholder="Nome do produto"
+      data-testid="product-search-input"
+    />
+  </label>
+
+  <label class="field">
+    <span>Categoria</span>
+    <select
+      [value]="selectedCategory()"
+      (change)="onSelectedCategoryChange($event)"
+      data-testid="product-category-select"
+    >
+      <option value="">Todas</option>
+      @for (category of categories(); track category) {
+        <option [value]="category">{{ category }}</option>
+      }
+    </select>
+  </label>
+
+  <button type="button" (click)="clearFilters.emit()" data-testid="clear-filters-button">
+    Limpar filtros
+  </button>
+</section>
