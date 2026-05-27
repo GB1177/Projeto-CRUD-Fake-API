@@ -1,0 +1,21 @@
+<div class="app-shell">
+  <header class="app-header">
+    <a class="brand" routerLink="/products" data-testid="app-brand">
+      Fake Store Admin
+    </a>
+
+    <nav class="nav" aria-label="Main navigation">
+      <a
+        routerLink="/products"
+        routerLinkActive="active"
+        data-testid="nav-products"
+      >
+        Products
+      </a>
+    </nav>
+  </header>
+
+  <main class="app-main">
+    <router-outlet />
+  </main>
+</div>
