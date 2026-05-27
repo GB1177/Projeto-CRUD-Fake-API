@@ -1,0 +1,42 @@
+<section class="form-page" data-testid="product-form-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Produtos</p>
+      <h1 data-testid="product-form-page-title">{{ title }}</h1>
+    </div>
+
+    <button
+      type="button"
+      class="secondary-action"
+      (click)="cancel()"
+      data-testid="product-form-page-back"
+    >
+      Voltar
+    </button>
+  </header>
+
+  @if (mode === 'edit' && store.loading()) {
+    <app-loading-state
+      message="Carregando produto..."
+      data-testid="product-form-page-loading"
+    />
+  } @else if (store.error(); as error) {
+    <app-error-state
+      [message]="error"
+      actionLabel="Tentar novamente"
+      (retry)="retryLoadProduct()"
+      data-testid="product-form-page-error"
+    />
+  } @else {
+    <div class="form-panel">
+      <app-product-form
+        [mode]="mode"
+        [initialValue]="mode === 'edit' ? store.selectedProduct() : null"
+        [categories]="store.categories()"
+        [saving]="store.saving()"
+        (formSubmit)="saveProduct($event)"
+        (cancel)="cancel()"
+      />
+    </div>
+  }
+</section>
