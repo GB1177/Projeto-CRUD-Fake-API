@@ -1,12 +1,66 @@
 <section class="products-page" data-testid="products-page">
   <div class="page-header">
     <div>
-      <p class="eyebrow">Products</p>
-      <h1>Product catalog</h1>
+      <p class="eyebrow">Produtos</p>
+      <h1 data-testid="products-page-title">Catálogo de produtos</h1>
     </div>
+
+    <button
+      type="button"
+      class="primary-action"
+      (click)="createProduct()"
+      data-testid="new-product-button"
+    >
+      Novo produto
+    </button>
   </div>
 
-  <div class="placeholder" data-testid="products-placeholder">
-    CRUD structure ready for implementation.
-  </div>
+  <app-product-filters
+    [searchTerm]="store.searchTerm()"
+    [selectedCategory]="store.selectedCategory()"
+    [categories]="store.categories()"
+    (searchTermChange)="store.setSearchTerm($event)"
+    (selectedCategoryChange)="store.setSelectedCategory($event)"
+    (clearFilters)="store.clearFilters()"
+  />
+
+  @if (store.loading()) {
+    <app-loading-state data-testid="products-loading" />
+  } @else if (store.error(); as error) {
+    <app-error-state
+      [message]="error"
+      actionLabel="Tentar novamente"
+      (retry)="retryLoadProducts()"
+      data-testid="products-error"
+    />
+  } @else if (store.isEmpty()) {
+    <app-empty-state
+      [title]="emptyTitle()"
+      [description]="emptyDescription()"
+      actionLabel="Limpar filtros"
+      (action)="store.clearFilters()"
+      data-testid="products-empty"
+    />
+  } @else {
+    <div class="products-grid" data-testid="products-grid">
+      @for (product of store.filteredProducts(); track product.id) {
+        <app-product-card
+          [product]="product"
+          (view)="viewProduct($event)"
+          (edit)="editProduct($event)"
+          (delete)="askToDelete($event)"
+        />
+      }
+    </div>
+  }
 </section>
+
+<app-confirm-dialog
+  [open]="productToDelete() !== null"
+  title="Excluir produto"
+  [message]="deleteDialogMessage()"
+  confirmLabel="Excluir"
+  cancelLabel="Cancelar"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+/>

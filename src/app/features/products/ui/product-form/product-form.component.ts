@@ -29,6 +29,7 @@ const defaultFormValue: ProductFormValue = {
 
 @Component({
   selector: 'app-product-form',
+  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss',

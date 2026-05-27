@@ -24,10 +24,31 @@ h1 {
   font-size: clamp(1.75rem, 3vw, 2.25rem);
 }
 
-.placeholder {
-  padding: 1.5rem;
-  border: 1px solid #d9e0ea;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #4b5563;
+.primary-action {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 6px;
+  background: #0f766e;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary-action:hover {
+  background: #115e59;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
