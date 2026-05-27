@@ -1,0 +1,13 @@
+<section class="state" data-testid="empty-state">
+  <div class="icon" aria-hidden="true"></div>
+  <div>
+    <h2 data-testid="empty-state-title">{{ title() }}</h2>
+    <p data-testid="empty-state-description">{{ description() }}</p>
+  </div>
+
+  @if (actionLabel(); as label) {
+    <button type="button" (click)="action.emit()" data-testid="empty-state-action">
+      {{ label }}
+    </button>
+  }
+</section>

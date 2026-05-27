@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.state {
+  display: grid;
+  justify-items: center;
+  gap: 0.875rem;
+  padding: 2rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fff7f7;
+  color: #7f1d1d;
+  text-align: center;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+p {
+  margin: 0;
+  font-weight: 600;
+}
+
+button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 6px;
+  background: #991b1b;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #7f1d1d;
+}

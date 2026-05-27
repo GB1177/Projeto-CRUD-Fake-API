@@ -1,0 +1,10 @@
+<section class="state" data-testid="error-state">
+  <div class="icon" aria-hidden="true">!</div>
+  <p data-testid="error-state-message">{{ message() }}</p>
+
+  @if (actionLabel(); as label) {
+    <button type="button" (click)="retry.emit()" data-testid="error-state-action">
+      {{ label }}
+    </button>
+  }
+</section>
