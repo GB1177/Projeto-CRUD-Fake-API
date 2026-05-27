@@ -1,0 +1,73 @@
+<section class="detail-page" data-testid="product-detail-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Produtos</p>
+      <h1 data-testid="product-detail-title">Detalhes do produto</h1>
+    </div>
+
+    <button
+      type="button"
+      class="secondary-action"
+      (click)="goBack()"
+      data-testid="product-detail-back"
+    >
+      Voltar
+    </button>
+  </header>
+
+  @if (store.loading()) {
+    <app-loading-state
+      message="Carregando produto..."
+      data-testid="product-detail-loading"
+    />
+  } @else if (store.error(); as error) {
+    <app-error-state
+      [message]="error"
+      actionLabel="Tentar novamente"
+      (retry)="retryLoadProduct()"
+      data-testid="product-detail-error"
+    />
+  } @else if (store.selectedProduct(); as product) {
+    <article class="product-detail" data-testid="product-detail-content">
+      <div class="image-frame">
+        <img [src]="product.image" [alt]="product.title" data-testid="product-detail-image" />
+      </div>
+
+      <div class="content">
+        <p class="category" data-testid="product-detail-category">{{ product.category }}</p>
+        <h2 data-testid="product-detail-product-title">{{ product.title }}</h2>
+        <p class="price" data-testid="product-detail-price">
+          {{ product.price | currency: 'USD' : 'symbol' : '1.2-2' }}
+        </p>
+        <p class="description" data-testid="product-detail-description">
+          {{ product.description }}
+        </p>
+
+        @if (product.rating; as rating) {
+          <p class="rating" data-testid="product-detail-rating">
+            {{ rating.rate | number: '1.1-1' }} / 5 · {{ rating.count }} avaliações
+          </p>
+        }
+
+        <div class="actions">
+          <button type="button" class="primary-action" (click)="editProduct()" data-testid="product-detail-edit">
+            Editar produto
+          </button>
+          <button type="button" class="danger-action" (click)="askToDelete()" data-testid="product-detail-delete">
+            Excluir produto
+          </button>
+        </div>
+      </div>
+    </article>
+  }
+</section>
+
+<app-confirm-dialog
+  [open]="deleteDialogOpen()"
+  title="Excluir produto"
+  [message]="deleteDialogMessage()"
+  confirmLabel="Excluir"
+  cancelLabel="Cancelar"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+/>
