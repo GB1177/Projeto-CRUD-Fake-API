@@ -24,6 +24,8 @@ export class ProductsStoreService {
   private readonly errorState = signal<string | null>(null);
   private readonly searchTermState = signal('');
   private readonly selectedCategoryState = signal('');
+  private readonly currentPageState = signal(1);
+  private readonly pageSizeState = signal(10);
 
   readonly products = this.productsState.asReadonly();
   readonly categories = this.categoriesState.asReadonly();
@@ -34,6 +36,8 @@ export class ProductsStoreService {
   readonly error = this.errorState.asReadonly();
   readonly searchTerm = this.searchTermState.asReadonly();
   readonly selectedCategory = this.selectedCategoryState.asReadonly();
+  readonly currentPage = this.currentPageState.asReadonly();
+  readonly pageSize = this.pageSizeState.asReadonly();
 
   readonly filteredProducts = computed(() => {
     const searchTerm = this.searchTermState().trim().toLowerCase();
@@ -52,6 +56,20 @@ export class ProductsStoreService {
   });
 
   readonly totalProducts = computed(() => this.filteredProducts().length);
+  readonly totalFilteredProducts = computed(() => this.filteredProducts().length);
+  readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.totalFilteredProducts() / this.pageSizeState())),
+  );
+  readonly paginatedProducts = computed(() => {
+    const startIndex = (this.currentPageState() - 1) * this.pageSizeState();
+    const endIndex = startIndex + this.pageSizeState();
+
+    return this.filteredProducts().slice(startIndex, endIndex);
+  });
+  readonly hasPreviousPage = computed(() => this.currentPageState() > 1);
+  readonly hasNextPage = computed(
+    () => this.currentPageState() < this.totalPages(),
+  );
   readonly hasProducts = computed(() => this.productsState().length > 0);
   readonly isEmpty = computed(
     () => !this.loadingState() && this.filteredProducts().length === 0,
@@ -106,15 +124,39 @@ export class ProductsStoreService {
 
   setSearchTerm(term: string): void {
     this.searchTermState.set(term);
+    this.resetPagination();
   }
 
   setSelectedCategory(category: string): void {
     this.selectedCategoryState.set(category);
+    this.resetPagination();
   }
 
   clearFilters(): void {
     this.searchTermState.set('');
     this.selectedCategoryState.set('');
+    this.resetPagination();
+  }
+
+  setCurrentPage(page: number): void {
+    this.currentPageState.set(this.normalizePage(page));
+  }
+
+  nextPage(): void {
+    this.setCurrentPage(this.currentPageState() + 1);
+  }
+
+  previousPage(): void {
+    this.setCurrentPage(this.currentPageState() - 1);
+  }
+
+  setPageSize(size: number): void {
+    this.pageSizeState.set(Math.max(1, Math.floor(size)));
+    this.resetPagination();
+  }
+
+  resetPagination(): void {
+    this.currentPageState.set(1);
   }
 
   createProduct(payload: CreateProductPayload): Observable<Product> {
@@ -165,6 +207,7 @@ export class ProductsStoreService {
         this.productsState.update((products) =>
           products.filter((product) => product.id !== id),
         );
+        this.currentPageState.set(this.normalizePage(this.currentPageState()));
         this.selectedProductState.update((product) =>
           product?.id === id ? null : product,
         );
@@ -183,5 +226,13 @@ export class ProductsStoreService {
 
   clearError(): void {
     this.errorState.set(null);
+  }
+
+  private normalizePage(page: number): number {
+    if (!Number.isFinite(page)) {
+      return 1;
+    }
+
+    return Math.min(Math.max(1, Math.floor(page)), this.totalPages());
   }
 }

@@ -43,24 +43,27 @@
     />
   } @else {
     <div class="products-grid" data-testid="products-grid">
-      @for (product of store.filteredProducts(); track product.id) {
+      @for (product of store.paginatedProducts(); track product.id) {
         <app-product-card
           [product]="product"
           (view)="viewProduct($event)"
-          (edit)="editProduct($event)"
-          (delete)="askToDelete($event)"
         />
       }
     </div>
+
+    @if (store.totalFilteredProducts() > 0) {
+      <app-product-pagination
+        [currentPage]="store.currentPage()"
+        [totalPages]="store.totalPages()"
+        [pageSize]="store.pageSize()"
+        [totalItems]="store.totalFilteredProducts()"
+        [hasPreviousPage]="store.hasPreviousPage()"
+        [hasNextPage]="store.hasNextPage()"
+        (previousPage)="store.previousPage()"
+        (nextPage)="store.nextPage()"
+        (pageChange)="store.setCurrentPage($event)"
+        (pageSizeChange)="store.setPageSize($event)"
+      />
+    }
   }
 </section>
-
-<app-confirm-dialog
-  [open]="productToDelete() !== null"
-  title="Excluir produto"
-  [message]="deleteDialogMessage()"
-  confirmLabel="Excluir"
-  cancelLabel="Cancelar"
-  (confirm)="confirmDelete()"
-  (cancel)="cancelDelete()"
-/>

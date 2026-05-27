@@ -90,6 +90,13 @@ describe('ProductsStoreService', () => {
     expect(store.searchTerm()).toBe('');
     expect(store.selectedCategory()).toBe('');
     expect(store.filteredProducts()).toEqual([]);
+    expect(store.currentPage()).toBe(1);
+    expect(store.pageSize()).toBe(10);
+    expect(store.totalFilteredProducts()).toBe(0);
+    expect(store.totalPages()).toBe(1);
+    expect(store.paginatedProducts()).toEqual([]);
+    expect(store.hasPreviousPage()).toBe(false);
+    expect(store.hasNextPage()).toBe(false);
     expect(store.hasProducts()).toBe(false);
     expect(store.isEmpty()).toBe(true);
     expect(store.totalProducts()).toBe(0);
@@ -185,6 +192,84 @@ describe('ProductsStoreService', () => {
     expect(store.filteredProducts()).toEqual(products);
   });
 
+  it('should return only products from the current page', () => {
+    const manyProducts = createProducts(12);
+    productsApi.getProducts.mockReturnValue(of(manyProducts));
+    store.loadProducts();
+
+    expect(store.paginatedProducts()).toEqual(manyProducts.slice(0, 10));
+
+    store.nextPage();
+
+    expect(store.paginatedProducts()).toEqual(manyProducts.slice(10, 12));
+  });
+
+  it('should go to next page when possible', () => {
+    productsApi.getProducts.mockReturnValue(of(createProducts(12)));
+    store.loadProducts();
+
+    store.nextPage();
+
+    expect(store.currentPage()).toBe(2);
+    expect(store.hasPreviousPage()).toBe(true);
+    expect(store.hasNextPage()).toBe(false);
+  });
+
+  it('should go to previous page when possible', () => {
+    productsApi.getProducts.mockReturnValue(of(createProducts(12)));
+    store.loadProducts();
+    store.nextPage();
+
+    store.previousPage();
+
+    expect(store.currentPage()).toBe(1);
+    expect(store.hasPreviousPage()).toBe(false);
+    expect(store.hasNextPage()).toBe(true);
+  });
+
+  it('should keep current page within valid limits', () => {
+    productsApi.getProducts.mockReturnValue(of(createProducts(12)));
+    store.loadProducts();
+
+    store.setCurrentPage(99);
+
+    expect(store.currentPage()).toBe(2);
+
+    store.setCurrentPage(0);
+
+    expect(store.currentPage()).toBe(1);
+  });
+
+  it('should reset pagination when search term changes', () => {
+    productsApi.getProducts.mockReturnValue(of(createProducts(12)));
+    store.loadProducts();
+    store.nextPage();
+
+    store.setSearchTerm('product');
+
+    expect(store.currentPage()).toBe(1);
+  });
+
+  it('should reset pagination when selected category changes', () => {
+    productsApi.getProducts.mockReturnValue(of(createProducts(12)));
+    store.loadProducts();
+    store.nextPage();
+
+    store.setSelectedCategory('mens clothing');
+
+    expect(store.currentPage()).toBe(1);
+  });
+
+  it('should reset pagination when filters are cleared', () => {
+    productsApi.getProducts.mockReturnValue(of(createProducts(12)));
+    store.loadProducts();
+    store.nextPage();
+
+    store.clearFilters();
+
+    expect(store.currentPage()).toBe(1);
+  });
+
   it('should create product and add it to local state', () => {
     const createdProduct: Product = {
       id: 3,
@@ -262,6 +347,20 @@ describe('ProductsStoreService', () => {
     expect(store.error()).toBeNull();
   });
 
+  it('should adjust current page after deleting product from the last page', () => {
+    const manyProducts = createProducts(11);
+
+    productsApi.getProducts.mockReturnValue(of(manyProducts));
+    productsApi.deleteProduct.mockReturnValue(of(manyProducts[10]));
+    store.loadProducts();
+    store.nextPage();
+
+    store.deleteProduct(manyProducts[10].id).subscribe();
+
+    expect(store.currentPage()).toBe(1);
+    expect(store.totalPages()).toBe(1);
+  });
+
   it('should clear selected product', () => {
     productsApi.getProductById.mockReturnValue(of(products[0]));
     store.loadProductById(products[0].id);
@@ -282,3 +381,14 @@ describe('ProductsStoreService', () => {
     expect(store.error()).toBeNull();
   });
 });
+
+function createProducts(total: number): Product[] {
+  return Array.from({ length: total }, (_, index) => ({
+    id: index + 1,
+    title: `Product ${index + 1}`,
+    price: index + 1,
+    description: `Product ${index + 1} description.`,
+    category: index % 2 === 0 ? 'mens clothing' : 'jewelery',
+    image: `https://example.com/product-${index + 1}.png`,
+  }));
+}

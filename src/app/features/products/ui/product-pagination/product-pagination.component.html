@@ -1,0 +1,52 @@
+<nav class="pagination" aria-label="Paginação de produtos" data-testid="product-pagination">
+  <p class="summary" data-testid="pagination-summary">
+    Página {{ currentPage() }} de {{ totalPages() }} · {{ totalItems() }} itens
+  </p>
+
+  <div class="controls">
+    <button
+      type="button"
+      [disabled]="!hasPreviousPage()"
+      (click)="previousPage.emit()"
+      data-testid="pagination-previous"
+    >
+      Anterior
+    </button>
+
+    <div class="pages" aria-label="Páginas">
+      @for (page of pages(); track page) {
+        <button
+          type="button"
+          [class.active]="page === currentPage()"
+          [attr.aria-current]="page === currentPage() ? 'page' : null"
+          (click)="pageChange.emit(page)"
+          [attr.data-testid]="'pagination-page-' + page"
+        >
+          {{ page }}
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      [disabled]="!hasNextPage()"
+      (click)="nextPage.emit()"
+      data-testid="pagination-next"
+    >
+      Próxima
+    </button>
+  </div>
+
+  <label class="page-size">
+    <span>Itens por página</span>
+    <select
+      [value]="pageSize()"
+      (change)="onPageSizeChange($event)"
+      data-testid="pagination-page-size"
+    >
+      @for (option of pageSizeOptions; track option) {
+        <option [value]="option">{{ option }}</option>
+      }
+    </select>
+  </label>
+</nav>

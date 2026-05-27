@@ -1,28 +1,49 @@
 :host {
   display: block;
+  min-width: 0;
+  height: 100%;
+}
+
+:host * {
+  box-sizing: border-box;
 }
 
 .card {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-height: 100%;
+  min-width: 0;
   overflow: hidden;
   border: 1px solid #d9e0ea;
   border-radius: 8px;
   background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: #99f6e4;
+  box-shadow: 0 14px 34px rgb(15 118 110 / 14%);
+  transform: translateY(-2px);
 }
 
 .image-frame {
   display: grid;
   place-items: center;
   aspect-ratio: 4 / 3;
+  min-height: 9rem;
   padding: 1rem;
   background: #f8fafc;
+  overflow: hidden;
 }
 
 img {
   max-width: 100%;
-  max-height: 11rem;
+  max-height: 10rem;
   object-fit: contain;
 }
 
@@ -30,6 +51,8 @@ img {
   display: grid;
   align-content: start;
   gap: 0.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
   padding: 1rem;
 }
 
@@ -46,6 +69,7 @@ h2 {
   color: #111827;
   font-size: 1rem;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .price {
@@ -62,39 +86,39 @@ h2 {
 }
 
 footer {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  padding: 1rem;
+  margin-top: auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem;
   border-top: 1px solid #edf2f7;
 }
 
 button {
-  min-height: 2.25rem;
-  border: 1px solid #cbd5e1;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid #0f766e;
   border-radius: 6px;
-  background: #ffffff;
-  color: #374151;
+  background: #0f766e;
+  color: #ffffff;
   font: inherit;
+  font-size: 0.875rem;
   font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   cursor: pointer;
 }
 
 button:hover {
-  background: #f3f4f6;
+  background: #ffffff;
+  color: #0f766e;
 }
 
-.danger {
-  border-color: #fecaca;
-  color: #991b1b;
-}
-
-.danger:hover {
-  background: #fff7f7;
-}
-
-@media (max-width: 420px) {
-  footer {
-    grid-template-columns: 1fr;
-  }
+button:focus-visible {
+  outline: 3px solid #5eead4;
+  outline-offset: 2px;
 }

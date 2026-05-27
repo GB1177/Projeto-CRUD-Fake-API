@@ -15,6 +15,4 @@ export class ProductCardComponent {
   readonly product = input.required<Product>();
 
   readonly view = output<Product>();
-  readonly edit = output<Product>();
-  readonly delete = output<Product>();
 }

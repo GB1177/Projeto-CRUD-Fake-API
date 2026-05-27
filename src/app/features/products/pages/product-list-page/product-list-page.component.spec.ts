@@ -1,7 +1,6 @@
 import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
 import { vi, type Mock } from 'vitest';
 
 import { Product } from '@core/models/product.model';
@@ -20,16 +19,27 @@ type ProductsStoreMock = {
   readonly searchTerm: WritableSignal<string>;
   readonly selectedCategory: WritableSignal<string>;
   readonly filteredProducts: WritableSignal<Product[]>;
+  readonly paginatedProducts: WritableSignal<Product[]>;
   readonly hasProducts: WritableSignal<boolean>;
   readonly isEmpty: WritableSignal<boolean>;
   readonly totalProducts: WritableSignal<number>;
+  readonly totalFilteredProducts: WritableSignal<number>;
+  readonly currentPage: WritableSignal<number>;
+  readonly pageSize: WritableSignal<number>;
+  readonly totalPages: WritableSignal<number>;
+  readonly hasPreviousPage: WritableSignal<boolean>;
+  readonly hasNextPage: WritableSignal<boolean>;
   readonly loadProducts: Mock<() => void>;
   readonly loadCategories: Mock<() => void>;
   readonly loadProductById: Mock<(id: number) => void>;
   readonly setSearchTerm: Mock<(term: string) => void>;
   readonly setSelectedCategory: Mock<(category: string) => void>;
   readonly clearFilters: Mock<() => void>;
-  readonly deleteProduct: Mock<(id: number) => ReturnType<ProductsStoreService['deleteProduct']>>;
+  readonly setCurrentPage: Mock<(page: number) => void>;
+  readonly nextPage: Mock<() => void>;
+  readonly previousPage: Mock<() => void>;
+  readonly setPageSize: Mock<(size: number) => void>;
+  readonly resetPagination: Mock<() => void>;
   readonly clearSelectedProduct: Mock<() => void>;
   readonly clearError: Mock<() => void>;
 };
@@ -130,31 +140,26 @@ describe('ProductListPageComponent', () => {
     expect(store.clearFilters).toHaveBeenCalledOnce();
   });
 
-  it('should open confirmation when delete is clicked', () => {
+  it('should navigate to product details from card action', () => {
     arrangeProducts();
 
     createComponent();
-    click('[data-testid="delete-product-button"]');
-    fixture.detectChanges();
+    click('[data-testid="view-product-button"]');
 
-    expect(query('[data-testid="confirm-dialog"]')).not.toBeNull();
-    expect(query('[data-testid="confirm-dialog-message"]')?.textContent).toContain(
-      product.title,
-    );
+    expect(router.navigate).toHaveBeenCalledWith(['/products', product.id]);
   });
 
-  it('should delete product after confirmation', () => {
+  it('should connect pagination actions to the store', () => {
     arrangeProducts();
-    store.deleteProduct.mockReturnValue(of(product));
+    store.totalPages.set(2);
+    store.hasNextPage.set(true);
 
     createComponent();
-    click('[data-testid="delete-product-button"]');
-    fixture.detectChanges();
-    click('[data-testid="confirm-dialog-confirm"]');
-    fixture.detectChanges();
+    click('[data-testid="pagination-next"]');
+    click('[data-testid="pagination-page-2"]');
 
-    expect(store.deleteProduct).toHaveBeenCalledWith(product.id);
-    expect(query('[data-testid="confirm-dialog"]')).toBeNull();
+    expect(store.nextPage).toHaveBeenCalledOnce();
+    expect(store.setCurrentPage).toHaveBeenCalledWith(2);
   });
 
   function createComponent(): void {
@@ -165,9 +170,11 @@ describe('ProductListPageComponent', () => {
   function arrangeProducts(): void {
     store.products.set([product]);
     store.filteredProducts.set([product]);
+    store.paginatedProducts.set([product]);
     store.hasProducts.set(true);
     store.isEmpty.set(false);
     store.totalProducts.set(1);
+    store.totalFilteredProducts.set(1);
   }
 
   function query(selector: string): HTMLElement | null {
@@ -222,18 +229,27 @@ function createStoreMock(): ProductsStoreMock {
     searchTerm: signal(''),
     selectedCategory: signal(''),
     filteredProducts: signal<Product[]>([]),
+    paginatedProducts: signal<Product[]>([]),
     hasProducts: signal(false),
     isEmpty: signal(true),
     totalProducts: signal(0),
+    totalFilteredProducts: signal(0),
+    currentPage: signal(1),
+    pageSize: signal(10),
+    totalPages: signal(1),
+    hasPreviousPage: signal(false),
+    hasNextPage: signal(false),
     loadProducts: vi.fn<() => void>(),
     loadCategories: vi.fn<() => void>(),
     loadProductById: vi.fn<(id: number) => void>(),
     setSearchTerm: vi.fn<(term: string) => void>(),
     setSelectedCategory: vi.fn<(category: string) => void>(),
     clearFilters: vi.fn<() => void>(),
-    deleteProduct: vi.fn<
-      (id: number) => ReturnType<ProductsStoreService['deleteProduct']>
-    >(),
+    setCurrentPage: vi.fn<(page: number) => void>(),
+    nextPage: vi.fn<() => void>(),
+    previousPage: vi.fn<() => void>(),
+    setPageSize: vi.fn<(size: number) => void>(),
+    resetPagination: vi.fn<() => void>(),
     clearSelectedProduct: vi.fn<() => void>(),
     clearError: vi.fn<() => void>(),
   };
