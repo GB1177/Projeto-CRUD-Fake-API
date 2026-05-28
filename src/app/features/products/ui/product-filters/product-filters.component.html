@@ -1,13 +1,35 @@
 <section class="filters" data-testid="product-filters">
   <label class="field">
     <span>Buscar produto</span>
-    <input
-      type="search"
-      [value]="searchTerm()"
-      (input)="onSearchTermInput($event)"
-      placeholder="Nome do produto"
-      data-testid="product-search-input"
-    />
+    <div class="autocomplete">
+      <input
+        type="search"
+        [formControl]="searchControl"
+        (focus)="openSuggestions()"
+        placeholder="Nome do produto"
+        autocomplete="off"
+        aria-autocomplete="list"
+        [attr.aria-expanded]="shouldShowSuggestions()"
+        data-testid="product-search-input"
+      />
+
+      @if (shouldShowSuggestions()) {
+        <ul class="suggestions" role="listbox" data-testid="search-suggestions">
+          @for (suggestion of suggestions(); track suggestion) {
+            <li role="presentation">
+              <button
+                type="button"
+                role="option"
+                (click)="selectSuggestion(suggestion)"
+                [attr.data-testid]="'search-suggestion-' + suggestion"
+              >
+                {{ suggestion }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
   </label>
 
   <label class="field">
@@ -24,7 +46,7 @@
     </select>
   </label>
 
-  <button type="button" (click)="clearFilters.emit()" data-testid="clear-filters-button">
+  <button type="button" (click)="clearAllFilters()" data-testid="clear-filters-button">
     Limpar filtros
   </button>
 </section>

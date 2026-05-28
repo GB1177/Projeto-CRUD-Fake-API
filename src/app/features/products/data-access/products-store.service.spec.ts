@@ -89,6 +89,7 @@ describe('ProductsStoreService', () => {
     expect(store.error()).toBeNull();
     expect(store.searchTerm()).toBe('');
     expect(store.selectedCategory()).toBe('');
+    expect(store.searchSuggestions()).toEqual([]);
     expect(store.filteredProducts()).toEqual([]);
     expect(store.currentPage()).toBe(1);
     expect(store.pageSize()).toBe(10);
@@ -166,6 +167,55 @@ describe('ProductsStoreService', () => {
     expect(store.searchTerm()).toBe('ring');
     expect(store.filteredProducts()).toEqual([products[1]]);
     expect(store.totalProducts()).toBe(1);
+  });
+
+  it('should generate search suggestions from product titles', () => {
+    productsApi.getProducts.mockReturnValue(of(products));
+    store.loadProducts();
+
+    store.setSearchTerm('g');
+
+    expect(store.searchSuggestions()).toEqual(['Gold Ring']);
+  });
+
+  it('should limit search suggestions', () => {
+    productsApi.getProducts.mockReturnValue(of(createProducts(8)));
+    store.loadProducts();
+
+    store.setSearchTerm('product');
+
+    expect(store.searchSuggestions()).toEqual([
+      'Product 1',
+      'Product 2',
+      'Product 3',
+      'Product 4',
+      'Product 5',
+    ]);
+  });
+
+  it('should not return duplicated search suggestions', () => {
+    productsApi.getProducts.mockReturnValue(
+      of([
+        ...products,
+        {
+          ...products[1],
+          id: 3,
+          title: 'Gold Ring',
+        },
+      ]),
+    );
+    store.loadProducts();
+
+    store.setSearchTerm('gold');
+
+    expect(store.searchSuggestions()).toEqual(['Gold Ring']);
+  });
+
+  it('should not generate search suggestions when search term is empty', () => {
+    productsApi.getProducts.mockReturnValue(of(products));
+    store.loadProducts();
+
+    expect(store.searchSuggestions()).toEqual([]);
   });
 
   it('should filter by selected category', () => {

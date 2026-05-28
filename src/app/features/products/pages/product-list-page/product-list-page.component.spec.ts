@@ -1,7 +1,7 @@
 import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { vi, type Mock } from 'vitest';
+import { afterEach, vi, type Mock } from 'vitest';
 
 import { Product } from '@core/models/product.model';
 
@@ -18,6 +18,7 @@ type ProductsStoreMock = {
   readonly error: WritableSignal<string | null>;
   readonly searchTerm: WritableSignal<string>;
   readonly selectedCategory: WritableSignal<string>;
+  readonly searchSuggestions: WritableSignal<string[]>;
   readonly filteredProducts: WritableSignal<Product[]>;
   readonly paginatedProducts: WritableSignal<Product[]>;
   readonly hasProducts: WritableSignal<boolean>;
@@ -83,6 +84,10 @@ describe('ProductListPageComponent', () => {
     }).compileComponents();
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should load products and categories on init', () => {
     createComponent();
 
@@ -120,12 +125,15 @@ describe('ProductListPageComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/products', 'new']);
   });
 
-  it('should update filters through the filters component', () => {
+  it('should update filters through the filters component', async () => {
+    vi.useFakeTimers();
     store.categories.set(['mens clothing']);
 
     createComponent();
 
     setInputValue('[data-testid="product-search-input"]', 'shirt');
+    await vi.advanceTimersByTimeAsync(300);
+    fixture.detectChanges();
     setSelectValue('[data-testid="product-category-select"]', 'mens clothing');
 
     expect(store.setSearchTerm).toHaveBeenCalledWith('shirt');
@@ -228,6 +236,7 @@ function createStoreMock(): ProductsStoreMock {
     error: signal<string | null>(null),
     searchTerm: signal(''),
     selectedCategory: signal(''),
+    searchSuggestions: signal<string[]>([]),
     filteredProducts: signal<Product[]>([]),
     paginatedProducts: signal<Product[]>([]),
     hasProducts: signal(false),

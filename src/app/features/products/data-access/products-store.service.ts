@@ -55,6 +55,35 @@ export class ProductsStoreService {
     });
   });
 
+  readonly searchSuggestions = computed(() => {
+    const searchTerm = this.searchTermState().trim().toLowerCase();
+
+    if (searchTerm.length === 0) {
+      return [];
+    }
+
+    const seenTitles = new Set<string>();
+    const suggestions: string[] = [];
+
+    for (const product of this.productsState()) {
+      const titleKey = product.title.trim().toLowerCase();
+
+      if (
+        titleKey.includes(searchTerm) &&
+        !seenTitles.has(titleKey)
+      ) {
+        seenTitles.add(titleKey);
+        suggestions.push(product.title);
+      }
+
+      if (suggestions.length === 5) {
+        break;
+      }
+    }
+
+    return suggestions;
+  });
+
   readonly totalProducts = computed(() => this.filteredProducts().length);
   readonly totalFilteredProducts = computed(() => this.filteredProducts().length);
   readonly totalPages = computed(() =>

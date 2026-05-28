@@ -19,6 +19,7 @@
     [searchTerm]="store.searchTerm()"
     [selectedCategory]="store.selectedCategory()"
     [categories]="store.categories()"
+    [suggestions]="store.searchSuggestions()"
     (searchTermChange)="store.setSearchTerm($event)"
     (selectedCategoryChange)="store.setSelectedCategory($event)"
     (clearFilters)="store.clearFilters()"
