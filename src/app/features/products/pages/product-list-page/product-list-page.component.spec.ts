@@ -30,7 +30,7 @@ type ProductsStoreMock = {
   readonly totalPages: WritableSignal<number>;
   readonly hasPreviousPage: WritableSignal<boolean>;
   readonly hasNextPage: WritableSignal<boolean>;
-  readonly loadProducts: Mock<() => void>;
+  readonly loadProducts: Mock<(forceRefresh?: boolean) => void>;
   readonly loadCategories: Mock<() => void>;
   readonly loadProductById: Mock<(id: number) => void>;
   readonly setSearchTerm: Mock<(term: string) => void>;
@@ -115,6 +115,7 @@ describe('ProductListPageComponent', () => {
     click('[data-testid="error-state-action"]');
 
     expect(store.loadProducts).toHaveBeenCalledTimes(2);
+    expect(store.loadProducts).toHaveBeenLastCalledWith(true);
   });
 
   it('should navigate to create page when new product is clicked', () => {
@@ -248,7 +249,7 @@ function createStoreMock(): ProductsStoreMock {
     totalPages: signal(1),
     hasPreviousPage: signal(false),
     hasNextPage: signal(false),
-    loadProducts: vi.fn<() => void>(),
+    loadProducts: vi.fn<(forceRefresh?: boolean) => void>(),
     loadCategories: vi.fn<() => void>(),
     loadProductById: vi.fn<(id: number) => void>(),
     setSearchTerm: vi.fn<(term: string) => void>(),

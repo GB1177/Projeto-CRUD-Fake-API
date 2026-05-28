@@ -65,7 +65,9 @@
 <app-confirm-dialog
   [open]="deleteDialogOpen()"
   title="Excluir produto"
-  [message]="deleteDialogMessage()"
+  [dangerMessage]="deleteDialogDangerMessage()"
+  message="Tem certeza que deseja prosseguir?"
+  confirmVariant="danger"
   confirmLabel="Excluir"
   cancelLabel="Cancelar"
   (confirm)="confirmDelete()"

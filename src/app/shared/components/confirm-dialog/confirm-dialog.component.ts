@@ -11,6 +11,8 @@ export class ConfirmDialogComponent {
   readonly open = input(false);
   readonly title = input('Confirmar ação');
   readonly message = input('Tem certeza de que deseja continuar?');
+  readonly dangerMessage = input('');
+  readonly confirmVariant = input<'primary' | 'danger'>('primary');
   readonly confirmLabel = input('Confirmar');
   readonly cancelLabel = input('Cancelar');
 

@@ -80,6 +80,32 @@ describe('ProductFiltersComponent', () => {
     expect(query('[data-testid="search-suggestions"]')).toBeNull();
   });
 
+  it('should close suggestions when clicking outside', () => {
+    fixture.componentRef.setInput('suggestions', ['Slim Shirt']);
+    fixture.detectChanges();
+    setInputValue('shi');
+    fixture.detectChanges();
+
+    document.body.click();
+    fixture.detectChanges();
+
+    expect(query('[data-testid="search-suggestions"]')).toBeNull();
+  });
+
+  it('should reopen suggestions when search input receives focus again', () => {
+    fixture.componentRef.setInput('suggestions', ['Slim Shirt']);
+    fixture.detectChanges();
+    setInputValue('shi');
+    fixture.detectChanges();
+    document.body.click();
+    fixture.detectChanges();
+
+    input().dispatchEvent(new Event('focus'));
+    fixture.detectChanges();
+
+    expect(query('[data-testid="search-suggestions"]')).not.toBeNull();
+  });
+
   it('should clear the input and emit clearFilters', () => {
     let emitted = false;
     fixture.componentInstance.clearFilters.subscribe(() => {

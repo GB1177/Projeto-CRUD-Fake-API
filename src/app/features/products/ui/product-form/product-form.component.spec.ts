@@ -32,7 +32,7 @@ describe('ProductFormComponent', () => {
   it('should validate required fields', () => {
     component.form.setValue({
       title: '',
-      price: 0,
+      price: '',
       description: '',
       category: '',
       image: '',
@@ -47,13 +47,21 @@ describe('ProductFormComponent', () => {
 
   it('should validate price greater than zero', () => {
     component.form.patchValue({
-      price: 0,
+      price: '0',
     });
 
     expect(component.form.controls.price.hasError('min')).toBe(true);
 
     component.form.patchValue({
-      price: 10,
+      price: '10',
+    });
+
+    expect(component.form.controls.price.hasError('min')).toBe(false);
+  });
+
+  it('should accept comma as decimal separator for price', () => {
+    component.form.patchValue({
+      price: '10,50',
     });
 
     expect(component.form.controls.price.hasError('min')).toBe(false);
@@ -76,7 +84,10 @@ describe('ProductFormComponent', () => {
   it('should emit formSubmit with valid payload', () => {
     const submittedValues: ProductFormValue[] = [];
     component.formSubmit.subscribe((value) => submittedValues.push(value));
-    component.form.setValue(initialValue);
+    component.form.setValue({
+      ...initialValue,
+      price: '49,9',
+    });
 
     component.submit();
 
@@ -88,12 +99,55 @@ describe('ProductFormComponent', () => {
     fixture.componentRef.setInput('initialValue', initialValue);
     fixture.detectChanges();
 
-    expect(component.form.getRawValue()).toEqual(initialValue);
+    expect(component.form.getRawValue()).toEqual({
+      ...initialValue,
+      price: '49,90',
+    });
     expect(component.form.valid).toBe(true);
   });
 
+  it('should format initial price with comma and two decimal places', () => {
+    fixture.componentRef.setInput('initialValue', {
+      ...initialValue,
+      price: 22.3,
+    });
+    fixture.detectChanges();
+
+    expect(priceInput(fixture).value).toBe('22,30');
+  });
+
+  it('should format integer price on blur', () => {
+    setPriceInputValue(fixture, '10');
+
+    priceInput(fixture).dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    expect(priceInput(fixture).value).toBe('10,00');
+  });
+
+  it('should format comma decimal price on blur', () => {
+    setPriceInputValue(fixture, '10,1');
+
+    priceInput(fixture).dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    expect(priceInput(fixture).value).toBe('10,10');
+  });
+
+  it('should format dot decimal price on blur', () => {
+    setPriceInputValue(fixture, '10.1');
+
+    priceInput(fixture).dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    expect(priceInput(fixture).value).toBe('10,10');
+  });
+
   it('should disable submit when saving is true', () => {
-    component.form.setValue(initialValue);
+    component.form.setValue({
+      ...initialValue,
+      price: '49.9',
+    });
     fixture.componentRef.setInput('saving', true);
     fixture.detectChanges();
 
@@ -101,7 +155,77 @@ describe('ProductFormComponent', () => {
 
     expect(submitButton.disabled).toBe(true);
   });
+
+  it('should render price input as text without number spinner behavior', () => {
+    expect(priceInput(fixture).type).toBe('text');
+    expect(priceInput(fixture).inputMode).toBe('decimal');
+  });
+
+  it('should render image preview when image URL is filled', () => {
+    component.form.patchValue({
+      image: initialValue.image,
+    });
+    fixture.detectChanges();
+
+    const previewImage = query<HTMLImageElement>(
+      fixture,
+      '[data-testid="product-image-preview-img"]',
+    );
+
+    expect(previewImage?.src).toBe(initialValue.image);
+  });
+
+  it('should render image preview fallback when image fails to load', () => {
+    component.form.patchValue({
+      image: initialValue.image,
+    });
+    fixture.detectChanges();
+
+    const previewImage = query<HTMLImageElement>(
+      fixture,
+      '[data-testid="product-image-preview-img"]',
+    );
+
+    previewImage?.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+
+    expect(
+      query(fixture, '[data-testid="product-image-preview-fallback"]'),
+    ).not.toBeNull();
+  });
 });
+
+function priceInput(
+  fixture: ComponentFixture<ProductFormComponent>,
+): HTMLInputElement {
+  const input = query<HTMLInputElement>(
+    fixture,
+    '[data-testid="product-price-input"]',
+  );
+
+  if (!input) {
+    throw new Error('Price input not found.');
+  }
+
+  return input;
+}
+
+function setPriceInputValue(
+  fixture: ComponentFixture<ProductFormComponent>,
+  value: string,
+): void {
+  const input = priceInput(fixture);
+  input.value = value;
+  input.dispatchEvent(new Event('input'));
+  fixture.detectChanges();
+}
+
+function query<T extends HTMLElement>(
+  fixture: ComponentFixture<ProductFormComponent>,
+  selector: string,
+): T | null {
+  return (fixture.nativeElement as HTMLElement).querySelector<T>(selector);
+}
 
 function getSubmitButton(
   fixture: ComponentFixture<ProductFormComponent>,

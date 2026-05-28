@@ -22,10 +22,7 @@
 }
 
 header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
+  display: block;
 }
 
 h2 {
@@ -34,10 +31,21 @@ h2 {
   font-size: 1.25rem;
 }
 
-p {
+.message {
+  display: grid;
+  gap: 0.5rem;
   margin: 1rem 0 0;
+}
+
+p {
+  margin: 0;
   color: #4b5563;
   line-height: 1.5;
+}
+
+.danger-message {
+  color: #b91c1c;
+  font-weight: 800;
 }
 
 footer {
@@ -55,18 +63,9 @@ button {
   cursor: pointer;
 }
 
-.icon-button {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  min-height: 2rem;
-  border: 1px solid #d9e0ea;
-  background: #ffffff;
-  color: #4b5563;
-}
-
 .secondary,
-.primary {
+.primary,
+.danger {
   padding: 0 1rem;
 }
 
@@ -82,6 +81,12 @@ button {
   color: #ffffff;
 }
 
+.danger {
+  border: 0;
+  background: #b91c1c;
+  color: #ffffff;
+}
+
 .secondary:hover {
   background: #f3f4f6;
 }
@@ -90,13 +95,23 @@ button {
   background: #115e59;
 }
 
+.danger:hover {
+  background: #991b1b;
+}
+
+button:focus-visible {
+  outline: 3px solid #5eead4;
+  outline-offset: 2px;
+}
+
 @media (max-width: 480px) {
   footer {
     flex-direction: column-reverse;
   }
 
   .secondary,
-  .primary {
+  .primary,
+  .danger {
     width: 100%;
   }
 }

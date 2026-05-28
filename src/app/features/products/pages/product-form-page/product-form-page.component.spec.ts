@@ -179,7 +179,10 @@ describe('ProductFormPageComponent', () => {
   function fillAndSubmitForm(value: ProductFormValue): void {
     const formComponent = getProductFormComponent();
 
-    formComponent.form.setValue(value);
+    formComponent.form.setValue({
+      ...value,
+      price: String(value.price),
+    });
     formComponent.submit();
     fixture.detectChanges();
   }

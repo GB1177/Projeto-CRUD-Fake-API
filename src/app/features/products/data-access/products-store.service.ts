@@ -26,6 +26,7 @@ export class ProductsStoreService {
   private readonly selectedCategoryState = signal('');
   private readonly currentPageState = signal(1);
   private readonly pageSizeState = signal(10);
+  private readonly productsLoadedState = signal(false);
 
   readonly products = this.productsState.asReadonly();
   readonly categories = this.categoriesState.asReadonly();
@@ -38,6 +39,7 @@ export class ProductsStoreService {
   readonly selectedCategory = this.selectedCategoryState.asReadonly();
   readonly currentPage = this.currentPageState.asReadonly();
   readonly pageSize = this.pageSizeState.asReadonly();
+  readonly productsLoaded = this.productsLoadedState.asReadonly();
 
   readonly filteredProducts = computed(() => {
     const searchTerm = this.searchTermState().trim().toLowerCase();
@@ -104,14 +106,21 @@ export class ProductsStoreService {
     () => !this.loadingState() && this.filteredProducts().length === 0,
   );
 
-  loadProducts(): void {
+  loadProducts(forceRefresh = false): void {
+    if (this.productsLoadedState() && !forceRefresh) {
+      return;
+    }
+
     this.loadingState.set(true);
     this.errorState.set(null);
 
     this.productsApi
       .getProducts()
       .pipe(
-        tap((products) => this.productsState.set(products)),
+        tap((products) => {
+          this.productsState.set(products);
+          this.productsLoadedState.set(true);
+        }),
         catchError(() => {
           this.errorState.set('Não foi possível carregar os produtos.');
           return EMPTY;
@@ -135,6 +144,14 @@ export class ProductsStoreService {
   }
 
   loadProductById(id: number): void {
+    const localProduct = this.productsState().find((product) => product.id === id);
+
+    if (localProduct) {
+      this.selectedProductState.set(localProduct);
+      this.errorState.set(null);
+      return;
+    }
+
     this.loadingState.set(true);
     this.errorState.set(null);
 
@@ -194,7 +211,11 @@ export class ProductsStoreService {
 
     return this.productsApi.createProduct(payload).pipe(
       tap((createdProduct) => {
-        this.productsState.update((products) => [...products, createdProduct]);
+        this.productsState.update((products) => [
+          ...products,
+          this.resolveCreatedProductId(createdProduct, products),
+        ]);
+        this.productsLoadedState.set(true);
       }),
       catchError((error: unknown) => {
         this.errorState.set('Não foi possível criar o produto.');
@@ -215,6 +236,7 @@ export class ProductsStoreService {
             product.id === id ? updatedProduct : product,
           ),
         );
+        this.productsLoadedState.set(true);
         this.selectedProductState.update((product) =>
           product?.id === id ? updatedProduct : product,
         );
@@ -236,6 +258,7 @@ export class ProductsStoreService {
         this.productsState.update((products) =>
           products.filter((product) => product.id !== id),
         );
+        this.productsLoadedState.set(true);
         this.currentPageState.set(this.normalizePage(this.currentPageState()));
         this.selectedProductState.update((product) =>
           product?.id === id ? null : product,
@@ -263,5 +286,27 @@ export class ProductsStoreService {
     }
 
     return Math.min(Math.max(1, Math.floor(page)), this.totalPages());
+  }
+
+  private resolveCreatedProductId(
+    createdProduct: Product,
+    products: readonly Product[],
+  ): Product {
+    const idAlreadyExists = products.some(
+      (product) => product.id === createdProduct.id,
+    );
+
+    if (!idAlreadyExists) {
+      return createdProduct;
+    }
+
+    const nextId =
+      products.reduce((highestId, product) => Math.max(highestId, product.id), 0) +
+      1;
+
+    return {
+      ...createdProduct,
+      id: nextId,
+    };
   }
 }

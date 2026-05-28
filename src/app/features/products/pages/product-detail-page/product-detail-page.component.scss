@@ -36,8 +36,10 @@ h2 {
 
 .product-detail {
   display: grid;
-  grid-template-columns: minmax(16rem, 24rem) minmax(0, 1fr);
+  grid-template-columns: minmax(16rem, 26rem) minmax(0, 1fr);
+  align-items: stretch;
   gap: 2rem;
+  min-height: 30rem;
   padding: 1.5rem;
   border: 1px solid #d9e0ea;
   border-radius: 8px;
@@ -47,22 +49,26 @@ h2 {
 .image-frame {
   display: grid;
   place-items: center;
-  min-height: 22rem;
+  min-height: 24rem;
+  aspect-ratio: 4 / 5;
   padding: 1.5rem;
   border-radius: 8px;
   background: #f8fafc;
+  overflow: hidden;
 }
 
 img {
   max-width: 100%;
-  max-height: 20rem;
+  max-height: 22rem;
   object-fit: contain;
 }
 
 .content {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
+  min-width: 0;
+  height: 100%;
 }
 
 .price {
@@ -79,7 +85,16 @@ img {
   line-height: 1.6;
 }
 
+.actions {
+  align-self: stretch;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
 button {
+  box-sizing: border-box;
   min-height: 2.75rem;
   padding: 0 1rem;
   border-radius: 6px;
@@ -136,14 +151,29 @@ button:focus-visible {
 
 @media (max-width: 800px) {
   .page-header,
-  .actions,
   .product-detail {
     grid-template-columns: 1fr;
   }
 
-  .page-header,
-  .actions {
+  .product-detail {
+    min-height: 0;
+  }
+
+  .page-header {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .image-frame {
+    min-height: 18rem;
+    aspect-ratio: 16 / 10;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+    margin-top: 1rem;
+    padding-top: 0;
   }
 }

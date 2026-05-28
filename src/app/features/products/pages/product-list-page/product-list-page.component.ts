@@ -44,7 +44,7 @@ export class ProductListPageComponent {
   }
 
   retryLoadProducts(): void {
-    this.store.loadProducts();
+    this.store.loadProducts(true);
   }
 
   emptyTitle(): string {

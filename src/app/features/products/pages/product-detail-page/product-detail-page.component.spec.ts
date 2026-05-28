@@ -125,7 +125,7 @@ describe('ProductDetailPageComponent', () => {
 
     expect(query('[data-testid="confirm-dialog"]')).not.toBeNull();
     expect(query('[data-testid="confirm-dialog-message"]')?.textContent).toContain(
-      product.title,
+      `O item "${product.title}"`,
     );
   });
 

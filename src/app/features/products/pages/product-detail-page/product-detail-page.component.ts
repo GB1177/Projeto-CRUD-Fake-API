@@ -38,10 +38,10 @@ export class ProductDetailPageComponent {
 
   readonly productId = this.getProductId();
   readonly deleteDialogOpen = signal(false);
-  readonly deleteDialogMessage = computed(() => {
+  readonly deleteDialogDangerMessage = computed(() => {
     const productTitle = this.store.selectedProduct()?.title ?? 'este produto';
 
-    return `Tem certeza de que deseja excluir ${productTitle}?`;
+    return `O item "${productTitle}" será excluído.`;
   });
 
   constructor() {

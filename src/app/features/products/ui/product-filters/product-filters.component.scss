@@ -24,6 +24,7 @@ span {
 input,
 select {
   width: 100%;
+  box-sizing: border-box;
   min-height: 2.75rem;
   padding: 0 0.75rem;
   border: 1px solid #cbd5e1;
@@ -31,6 +32,21 @@ select {
   background: #ffffff;
   color: #111827;
   font: inherit;
+}
+
+select {
+  padding-right: 2.25rem;
+  background:
+    linear-gradient(45deg, transparent 50%, #0f766e 50%) right 0.95rem center / 0.35rem 0.35rem no-repeat,
+    linear-gradient(135deg, #0f766e 50%, transparent 50%) right 0.7rem center / 0.35rem 0.35rem no-repeat,
+    #ffffff;
+  cursor: pointer;
+  appearance: none;
+}
+
+input:hover,
+select:hover {
+  border-color: #94a3b8;
 }
 
 input:focus-visible,

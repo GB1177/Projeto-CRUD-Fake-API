@@ -27,20 +27,24 @@
   text-decoration: none;
 }
 
+.brand:hover {
+  color: #0f766e;
+}
+
+.brand:focus-visible {
+  outline: 3px solid #5eead4;
+  outline-offset: 3px;
+}
+
 .nav {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.nav a {
-  color: #4b5563;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.nav a.active {
+.nav span {
   color: #0f766e;
+  font-weight: 600;
 }
 
 .app-main {

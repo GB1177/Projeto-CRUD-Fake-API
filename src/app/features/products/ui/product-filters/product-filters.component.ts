@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
+  HostListener,
   computed,
   effect,
   inject,
@@ -23,6 +25,7 @@ import { debounceTime, distinctUntilChanged, map, tap } from 'rxjs';
 })
 export class ProductFiltersComponent {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly host = inject(ElementRef<HTMLElement>);
   private readonly searchValueState = signal('');
   private readonly suggestionsOpenState = signal(false);
 
@@ -74,6 +77,15 @@ export class ProductFiltersComponent {
 
   openSuggestions(): void {
     this.suggestionsOpenState.set(this.searchValueState().trim().length > 0);
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeSuggestionsWhenClickingOutside(event: MouseEvent): void {
+    const target = event.target;
+
+    if (target instanceof Node && !this.host.nativeElement.contains(target)) {
+      this.suggestionsOpenState.set(false);
+    }
   }
 
   selectSuggestion(title: string): void {

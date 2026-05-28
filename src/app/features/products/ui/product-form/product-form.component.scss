@@ -4,18 +4,34 @@
 
 .product-form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+  align-items: stretch;
+  gap: 1.5rem;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  min-height: 100%;
+}
+
+.field-grid {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+  min-width: 0;
 }
 
 .field {
   display: grid;
   gap: 0.375rem;
+  min-width: 0;
 }
 
-.full,
 .actions {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 span {
@@ -28,6 +44,7 @@ input,
 select,
 textarea {
   width: 100%;
+  box-sizing: border-box;
   min-height: 2.75rem;
   padding: 0.625rem 0.75rem;
   border: 1px solid #cbd5e1;
@@ -37,7 +54,32 @@ textarea {
   font: inherit;
 }
 
-textarea {
+select {
+  padding-right: 2.25rem;
+  background:
+    linear-gradient(45deg, transparent 50%, #0f766e 50%) right 0.95rem center / 0.35rem 0.35rem no-repeat,
+    linear-gradient(135deg, #0f766e 50%, transparent 50%) right 0.7rem center / 0.35rem 0.35rem no-repeat,
+    #ffffff;
+  cursor: pointer;
+  appearance: none;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #94a3b8;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #5eead4;
+  outline-offset: 2px;
+}
+
+.product-form__textarea {
+  height: 165px;
+  min-height: 165px;
   resize: vertical;
 }
 
@@ -49,8 +91,43 @@ small {
 
 .actions {
   display: flex;
+  align-self: stretch;
   justify-content: flex-end;
   gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.image-preview {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.preview-frame {
+  display: grid;
+  place-items: center;
+  min-height: 22rem;
+  padding: 1rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.preview-frame img {
+  max-width: 100%;
+  max-height: 20rem;
+  object-fit: contain;
+}
+
+.preview-frame p {
+  max-width: 16rem;
+  margin: 0;
+  color: #6b7280;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
 }
 
 button {
@@ -65,6 +142,11 @@ button {
 button:disabled {
   cursor: not-allowed;
   opacity: 0.65;
+}
+
+button:focus-visible {
+  outline: 3px solid #5eead4;
+  outline-offset: 2px;
 }
 
 .secondary {
@@ -88,11 +170,14 @@ button:disabled {
 }
 
 @media (max-width: 720px) {
-  .product-form {
+  .product-form,
+  .field-grid {
     grid-template-columns: 1fr;
   }
 
   .actions {
     flex-direction: column-reverse;
+    margin-top: 0;
+    padding-top: 0;
   }
 }

@@ -93,6 +93,7 @@ describe('ProductsStoreService', () => {
     expect(store.filteredProducts()).toEqual([]);
     expect(store.currentPage()).toBe(1);
     expect(store.pageSize()).toBe(10);
+    expect(store.productsLoaded()).toBe(false);
     expect(store.totalFilteredProducts()).toBe(0);
     expect(store.totalPages()).toBe(1);
     expect(store.paginatedProducts()).toEqual([]);
@@ -114,6 +115,30 @@ describe('ProductsStoreService', () => {
     expect(store.error()).toBeNull();
     expect(store.hasProducts()).toBe(true);
     expect(store.totalProducts()).toBe(2);
+    expect(store.productsLoaded()).toBe(true);
+  });
+
+  it('should not reload products when local products are already loaded', () => {
+    productsApi.getProducts.mockReturnValue(of(products));
+    store.loadProducts();
+
+    store.loadProducts();
+
+    expect(productsApi.getProducts).toHaveBeenCalledOnce();
+    expect(store.products()).toEqual(products);
+  });
+
+  it('should force products reload when requested', () => {
+    const reloadedProducts = [products[1]];
+    productsApi.getProducts
+      .mockReturnValueOnce(of(products))
+      .mockReturnValueOnce(of(reloadedProducts));
+    store.loadProducts();
+
+    store.loadProducts(true);
+
+    expect(productsApi.getProducts).toHaveBeenCalledTimes(2);
+    expect(store.products()).toEqual(reloadedProducts);
   });
 
   it('should handle load products error', () => {
@@ -156,6 +181,16 @@ describe('ProductsStoreService', () => {
     expect(store.selectedProduct()).toEqual(selectedProduct);
     expect(store.loading()).toBe(false);
     expect(store.error()).toBeNull();
+  });
+
+  it('should load product by id from local state when available', () => {
+    productsApi.getProducts.mockReturnValue(of(products));
+    store.loadProducts();
+
+    store.loadProductById(products[0].id);
+
+    expect(productsApi.getProductById).not.toHaveBeenCalled();
+    expect(store.selectedProduct()).toEqual(products[0]);
   });
 
   it('should filter by title with search term', () => {
@@ -344,6 +379,22 @@ describe('ProductsStoreService', () => {
     expect(store.error()).toBeNull();
   });
 
+  it('should keep created product in local state when loadProducts is called again', () => {
+    const createdProduct: Product = {
+      id: 3,
+      ...createPayload,
+    };
+    productsApi.getProducts.mockReturnValue(of(products));
+    productsApi.createProduct.mockReturnValue(of(createdProduct));
+    store.loadProducts();
+
+    store.createProduct(createPayload).subscribe();
+    store.loadProducts();
+
+    expect(productsApi.getProducts).toHaveBeenCalledOnce();
+    expect(store.products()).toContainEqual(createdProduct);
+  });
+
   it('should update product and replace it in local state', () => {
     const updatePayload: UpdateProductPayload = {
       title: 'Updated Shirt',
@@ -378,6 +429,29 @@ describe('ProductsStoreService', () => {
     expect(store.error()).toBeNull();
   });
 
+  it('should keep updated product in local state when loadProducts is called again', () => {
+    const updatePayload: UpdateProductPayload = {
+      title: 'Updated Shirt',
+      price: 59.9,
+      description: 'Updated cotton shirt.',
+      category: 'mens clothing',
+      image: 'https://example.com/updated-shirt.png',
+    };
+    const updatedProduct: Product = {
+      id: products[0].id,
+      ...updatePayload,
+    };
+    productsApi.getProducts.mockReturnValue(of(products));
+    productsApi.updateProduct.mockReturnValue(of(updatedProduct));
+    store.loadProducts();
+
+    store.updateProduct(updatedProduct.id, updatePayload).subscribe();
+    store.loadProducts();
+
+    expect(productsApi.getProducts).toHaveBeenCalledOnce();
+    expect(store.products()).toEqual([updatedProduct, products[1]]);
+  });
+
   it('should delete product and remove it from local state', () => {
     productsApi.getProducts.mockReturnValue(of(products));
     productsApi.deleteProduct.mockReturnValue(of(products[0]));
@@ -395,6 +469,18 @@ describe('ProductsStoreService', () => {
     expect(store.products()).toEqual([products[1]]);
     expect(store.deleting()).toBe(false);
     expect(store.error()).toBeNull();
+  });
+
+  it('should keep deleted product out of local state when loadProducts is called again', () => {
+    productsApi.getProducts.mockReturnValue(of(products));
+    productsApi.deleteProduct.mockReturnValue(of(products[0]));
+    store.loadProducts();
+
+    store.deleteProduct(products[0].id).subscribe();
+    store.loadProducts();
+
+    expect(productsApi.getProducts).toHaveBeenCalledOnce();
+    expect(store.products()).toEqual([products[1]]);
   });
 
   it('should adjust current page after deleting product from the last page', () => {
