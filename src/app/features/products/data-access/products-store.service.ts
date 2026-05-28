@@ -27,6 +27,7 @@ export class ProductsStoreService {
   private readonly currentPageState = signal(1);
   private readonly pageSizeState = signal(10);
   private readonly productsLoadedState = signal(false);
+  private readonly categoriesLoadedState = signal(false);
 
   readonly products = this.productsState.asReadonly();
   readonly categories = this.categoriesState.asReadonly();
@@ -130,11 +131,18 @@ export class ProductsStoreService {
       .subscribe();
   }
 
-  loadCategories(): void {
+  loadCategories(forceRefresh = false): void {
+    if (this.categoriesLoadedState() && !forceRefresh) {
+      return;
+    }
+
     this.productsApi
       .getCategories()
       .pipe(
-        tap((categories) => this.categoriesState.set(categories)),
+        tap((categories) => {
+          this.categoriesState.set(categories);
+          this.categoriesLoadedState.set(true);
+        }),
         catchError(() => {
           this.errorState.set('Não foi possível carregar as categorias.');
           return EMPTY;
