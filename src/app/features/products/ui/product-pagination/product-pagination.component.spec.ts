@@ -30,7 +30,7 @@ describe('ProductPaginationComponent', () => {
   });
 
   it('should disable previous button on the first page', () => {
-    expect(button('[data-testid="pagination-previous"]').disabled).toBe(true);
+    expect(button('[data-testid="pagination-previous-button"]').disabled).toBe(true);
   });
 
   it('should disable next button on the last page', () => {
@@ -39,7 +39,7 @@ describe('ProductPaginationComponent', () => {
     fixture.componentRef.setInput('hasNextPage', false);
     fixture.detectChanges();
 
-    expect(button('[data-testid="pagination-next"]').disabled).toBe(true);
+    expect(button('[data-testid="pagination-next-button"]').disabled).toBe(true);
   });
 
   it('should emit previousPage', () => {
@@ -48,7 +48,7 @@ describe('ProductPaginationComponent', () => {
     fixture.detectChanges();
     fixture.componentInstance.previousPage.subscribe((value) => values.push(value));
 
-    button('[data-testid="pagination-previous"]').click();
+    button('[data-testid="pagination-previous-button"]').click();
 
     expect(values.length).toBe(1);
   });
@@ -57,7 +57,7 @@ describe('ProductPaginationComponent', () => {
     const values: void[] = [];
     fixture.componentInstance.nextPage.subscribe((value) => values.push(value));
 
-    button('[data-testid="pagination-next"]').click();
+    button('[data-testid="pagination-next-button"]').click();
 
     expect(values.length).toBe(1);
   });
@@ -66,7 +66,7 @@ describe('ProductPaginationComponent', () => {
     const values: number[] = [];
     fixture.componentInstance.pageChange.subscribe((page) => values.push(page));
 
-    button('[data-testid="pagination-page-2"]').click();
+    pageButton(2).click();
 
     expect(values).toEqual([2]);
   });
@@ -74,7 +74,7 @@ describe('ProductPaginationComponent', () => {
   it('should emit pageSizeChange', () => {
     const values: number[] = [];
     fixture.componentInstance.pageSizeChange.subscribe((size) => values.push(size));
-    const select = query('[data-testid="pagination-page-size"]') as HTMLSelectElement;
+    const select = query('[data-testid="page-size-select"]') as HTMLSelectElement;
 
     select.value = '15';
     select.dispatchEvent(new Event('change'));
@@ -91,6 +91,21 @@ describe('ProductPaginationComponent', () => {
 
     if (!element) {
       throw new Error(`Button not found: ${selector}`);
+    }
+
+    return element;
+  }
+
+  function pageButton(page: number): HTMLButtonElement {
+    const buttons = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '[data-testid="pagination-page-button"]',
+      ),
+    );
+    const element = buttons.find((current) => current.textContent?.trim() === String(page));
+
+    if (!element) {
+      throw new Error(`Page button not found: ${page}`);
     }
 
     return element;

@@ -60,7 +60,7 @@ describe('ConfirmDialogComponent', () => {
 
   it('should apply danger variant to confirm button', () => {
     expect(
-      query('[data-testid="confirm-dialog-confirm"]')?.classList.contains(
+      query('[data-testid="confirm-dialog-confirm-button"]')?.classList.contains(
         'danger',
       ),
     ).toBe(true);

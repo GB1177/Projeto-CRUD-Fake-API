@@ -2,14 +2,14 @@
   <header class="page-header">
     <div>
       <p class="eyebrow">Produtos</p>
-      <h1 data-testid="product-detail-title">Detalhes do produto</h1>
+      <h1 data-testid="product-detail-page-title">Detalhes do produto</h1>
     </div>
 
     <button
       type="button"
       class="secondary-action"
       (click)="goBack()"
-      data-testid="product-detail-back"
+      data-testid="back-button"
     >
       Voltar
     </button>
@@ -35,7 +35,7 @@
 
       <div class="content">
         <p class="category" data-testid="product-detail-category">{{ product.category }}</p>
-        <h2 data-testid="product-detail-product-title">{{ product.title }}</h2>
+        <h2 data-testid="product-detail-title">{{ product.title }}</h2>
         <p class="price" data-testid="product-detail-price">
           {{ product.price | currency: 'USD' : 'symbol' : '1.2-2' }}
         </p>
@@ -50,10 +50,10 @@
         }
 
         <div class="actions">
-          <button type="button" class="primary-action" (click)="editProduct()" data-testid="product-detail-edit">
+          <button type="button" class="primary-action" (click)="editProduct()" data-testid="edit-product-button">
             Editar produto
           </button>
-          <button type="button" class="danger-action" (click)="askToDelete()" data-testid="product-detail-delete">
+          <button type="button" class="danger-action" (click)="askToDelete()" data-testid="delete-product-button">
             Excluir produto
           </button>
         </div>

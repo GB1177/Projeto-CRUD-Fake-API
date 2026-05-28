@@ -84,7 +84,7 @@ describe('ProductDetailPageComponent', () => {
     store.selectedProduct.set(product);
     await setup(store);
 
-    expect(query('[data-testid="product-detail-product-title"]')?.textContent).toContain(
+    expect(query('[data-testid="product-detail-title"]')?.textContent).toContain(
       product.title,
     );
     expect(query('[data-testid="product-detail-category"]')?.textContent).toContain(
@@ -101,7 +101,7 @@ describe('ProductDetailPageComponent', () => {
     store.selectedProduct.set(product);
     await setup(store);
 
-    click('[data-testid="product-detail-back"]');
+    click('[data-testid="back-button"]');
 
     expect(router.navigate).toHaveBeenCalledWith(['/products']);
   });
@@ -111,7 +111,7 @@ describe('ProductDetailPageComponent', () => {
     store.selectedProduct.set(product);
     await setup(store);
 
-    click('[data-testid="product-detail-edit"]');
+    click('[data-testid="edit-product-button"]');
 
     expect(router.navigate).toHaveBeenCalledWith(['/products', product.id, 'edit']);
   });
@@ -121,7 +121,7 @@ describe('ProductDetailPageComponent', () => {
     store.selectedProduct.set(product);
     await setup(store);
 
-    click('[data-testid="product-detail-delete"]');
+    click('[data-testid="delete-product-button"]');
 
     expect(query('[data-testid="confirm-dialog"]')).not.toBeNull();
     expect(query('[data-testid="confirm-dialog-message"]')?.textContent).toContain(
@@ -135,8 +135,8 @@ describe('ProductDetailPageComponent', () => {
     store.deleteProduct.mockReturnValue(of(product));
     await setup(store);
 
-    click('[data-testid="product-detail-delete"]');
-    click('[data-testid="confirm-dialog-confirm"]');
+    click('[data-testid="delete-product-button"]');
+    click('[data-testid="confirm-dialog-confirm-button"]');
 
     expect(store.deleteProduct).toHaveBeenCalledWith(product.id);
   });
@@ -147,8 +147,8 @@ describe('ProductDetailPageComponent', () => {
     store.deleteProduct.mockReturnValue(of(product));
     await setup(store);
 
-    click('[data-testid="product-detail-delete"]');
-    click('[data-testid="confirm-dialog-confirm"]');
+    click('[data-testid="delete-product-button"]');
+    click('[data-testid="confirm-dialog-confirm-button"]');
 
     expect(router.navigate).toHaveBeenCalledWith(['/products']);
   });
@@ -158,8 +158,8 @@ describe('ProductDetailPageComponent', () => {
     store.selectedProduct.set(product);
     await setup(store);
 
-    click('[data-testid="product-detail-delete"]');
-    click('[data-testid="confirm-dialog-cancel"]');
+    click('[data-testid="delete-product-button"]');
+    click('[data-testid="confirm-dialog-cancel-button"]');
 
     expect(store.deleteProduct).not.toHaveBeenCalled();
     expect(query('[data-testid="confirm-dialog"]')).toBeNull();

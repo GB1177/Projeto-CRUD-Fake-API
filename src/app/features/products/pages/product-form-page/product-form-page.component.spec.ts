@@ -118,7 +118,7 @@ describe('ProductFormPageComponent', () => {
 
   it('should navigate to products when canceling', async () => {
     await setup();
-    click('[data-testid="product-form-cancel"]');
+    click('[data-testid="cancel-product-button"]');
 
     expect(router.navigate).toHaveBeenCalledWith(['/products']);
   });

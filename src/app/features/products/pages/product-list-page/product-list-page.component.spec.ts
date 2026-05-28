@@ -135,7 +135,7 @@ describe('ProductListPageComponent', () => {
     setInputValue('[data-testid="product-search-input"]', 'shirt');
     await vi.advanceTimersByTimeAsync(300);
     fixture.detectChanges();
-    setSelectValue('[data-testid="product-category-select"]', 'mens clothing');
+    setSelectValue('[data-testid="category-filter-select"]', 'mens clothing');
 
     expect(store.setSearchTerm).toHaveBeenCalledWith('shirt');
     expect(store.setSelectedCategory).toHaveBeenCalledWith('mens clothing');
@@ -153,7 +153,7 @@ describe('ProductListPageComponent', () => {
     arrangeProducts();
 
     createComponent();
-    click('[data-testid="view-product-button"]');
+    click('[data-testid="product-details-button"]');
 
     expect(router.navigate).toHaveBeenCalledWith(['/products', product.id]);
   });
@@ -164,8 +164,8 @@ describe('ProductListPageComponent', () => {
     store.hasNextPage.set(true);
 
     createComponent();
-    click('[data-testid="pagination-next"]');
-    click('[data-testid="pagination-page-2"]');
+    click('[data-testid="pagination-next-button"]');
+    clickPageButton(2);
 
     expect(store.nextPage).toHaveBeenCalledOnce();
     expect(store.setCurrentPage).toHaveBeenCalledWith(2);
@@ -198,6 +198,22 @@ describe('ProductListPageComponent', () => {
     }
 
     element.click();
+    fixture.detectChanges();
+  }
+
+  function clickPageButton(page: number): void {
+    const buttons = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '[data-testid="pagination-page-button"]',
+      ),
+    );
+    const button = buttons.find((element) => element.textContent?.trim() === String(page));
+
+    if (!button) {
+      throw new Error(`Page button not found: ${page}`);
+    }
+
+    button.click();
     fixture.detectChanges();
   }
 

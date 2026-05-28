@@ -29,7 +29,7 @@
 
       <label class="field">
         <span>Categoria</span>
-        <select formControlName="category" data-testid="product-category-input">
+        <select formControlName="category" data-testid="product-category-select">
           <option value="">Selecione uma categoria</option>
           @for (category of categories(); track category) {
             <option [value]="category">{{ category }}</option>
@@ -68,14 +68,14 @@
     </label>
 
     <div class="actions">
-      <button type="button" class="secondary" (click)="cancel.emit()" data-testid="product-form-cancel">
+      <button type="button" class="secondary" (click)="cancel.emit()" data-testid="cancel-product-button">
         Cancelar
       </button>
       <button
         type="submit"
         class="primary"
         [disabled]="form.invalid || saving()"
-        data-testid="product-form-submit"
+        data-testid="submit-product-button"
       >
         {{ submitLabel }}
       </button>

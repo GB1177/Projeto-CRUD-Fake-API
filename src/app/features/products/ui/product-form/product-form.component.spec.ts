@@ -232,7 +232,7 @@ function getSubmitButton(
 ): HTMLButtonElement {
   const element = fixture.nativeElement as HTMLElement;
   const button = element.querySelector<HTMLButtonElement>(
-    '[data-testid="product-form-submit"]',
+    '[data-testid="submit-product-button"]',
   );
 
   if (!button) {

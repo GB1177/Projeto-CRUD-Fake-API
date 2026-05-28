@@ -8,7 +8,7 @@
       type="button"
       [disabled]="!hasPreviousPage()"
       (click)="previousPage.emit()"
-      data-testid="pagination-previous"
+      data-testid="pagination-previous-button"
     >
       Anterior
     </button>
@@ -20,7 +20,7 @@
           [class.active]="page === currentPage()"
           [attr.aria-current]="page === currentPage() ? 'page' : null"
           (click)="pageChange.emit(page)"
-          [attr.data-testid]="'pagination-page-' + page"
+          data-testid="pagination-page-button"
         >
           {{ page }}
         </button>
@@ -31,7 +31,7 @@
       type="button"
       [disabled]="!hasNextPage()"
       (click)="nextPage.emit()"
-      data-testid="pagination-next"
+      data-testid="pagination-next-button"
     >
       Próxima
     </button>
@@ -42,7 +42,7 @@
     <select
       [value]="pageSize()"
       (change)="onPageSizeChange($event)"
-      data-testid="pagination-page-size"
+      data-testid="page-size-select"
     >
       @for (option of pageSizeOptions; track option) {
         <option [value]="option">{{ option }}</option>

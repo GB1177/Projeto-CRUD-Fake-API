@@ -95,6 +95,13 @@ export class ProductFiltersComponent {
     this.searchTermChange.emit(title);
   }
 
+  clearSearchTerm(): void {
+    this.searchControl.setValue('', { emitEvent: false });
+    this.searchValueState.set('');
+    this.suggestionsOpenState.set(false);
+    this.searchTermChange.emit('');
+  }
+
   clearAllFilters(): void {
     this.searchControl.setValue('', { emitEvent: false });
     this.searchValueState.set('');

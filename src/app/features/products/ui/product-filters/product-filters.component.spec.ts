@@ -60,7 +60,7 @@ describe('ProductFiltersComponent', () => {
     fixture.detectChanges();
 
     expect(query('[data-testid="search-suggestions"]')).not.toBeNull();
-    expect(query('[data-testid="search-suggestion-Slim Shirt"]')).not.toBeNull();
+    expect(query('[data-testid="search-suggestion-item"]')).not.toBeNull();
   });
 
   it('should fill the input and emit searchTermChange when a suggestion is selected', () => {
@@ -73,7 +73,7 @@ describe('ProductFiltersComponent', () => {
     setInputValue('shi');
     fixture.detectChanges();
 
-    click('[data-testid="search-suggestion-Slim Shirt"]');
+    click('[data-testid="search-suggestion-item"]');
 
     expect(input().value).toBe('Slim Shirt');
     expect(values).toEqual(['Slim Shirt']);
@@ -120,13 +120,27 @@ describe('ProductFiltersComponent', () => {
     expect(query('[data-testid="search-suggestions"]')).toBeNull();
   });
 
+  it('should clear only the search term', () => {
+    const values: string[] = [];
+    fixture.componentInstance.searchTermChange.subscribe((value) =>
+      values.push(value),
+    );
+    setInputValue('shirt');
+
+    click('[data-testid="clear-search-button"]');
+
+    expect(input().value).toBe('');
+    expect(values).toEqual(['']);
+    expect(query('[data-testid="search-suggestions"]')).toBeNull();
+  });
+
   it('should emit selectedCategoryChange when category changes', () => {
     const values: string[] = [];
     fixture.componentInstance.selectedCategoryChange.subscribe((value) =>
       values.push(value),
     );
     const select = query(
-      '[data-testid="product-category-select"]',
+      '[data-testid="category-filter-select"]',
     ) as HTMLSelectElement;
 
     select.value = 'jewelery';

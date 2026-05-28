@@ -13,6 +13,18 @@
         data-testid="product-search-input"
       />
 
+      @if (searchControl.value.trim().length > 0) {
+        <button
+          type="button"
+          class="clear-search"
+          aria-label="Limpar busca"
+          (click)="clearSearchTerm()"
+          data-testid="clear-search-button"
+        >
+          ×
+        </button>
+      }
+
       @if (shouldShowSuggestions()) {
         <ul class="suggestions" role="listbox" data-testid="search-suggestions">
           @for (suggestion of suggestions(); track suggestion) {
@@ -21,7 +33,7 @@
                 type="button"
                 role="option"
                 (click)="selectSuggestion(suggestion)"
-                [attr.data-testid]="'search-suggestion-' + suggestion"
+                data-testid="search-suggestion-item"
               >
                 {{ suggestion }}
               </button>
@@ -37,7 +49,7 @@
     <select
       [value]="selectedCategory()"
       (change)="onSelectedCategoryChange($event)"
-      data-testid="product-category-select"
+      data-testid="category-filter-select"
     >
       <option value="">Todas</option>
       @for (category of categories(); track category) {
