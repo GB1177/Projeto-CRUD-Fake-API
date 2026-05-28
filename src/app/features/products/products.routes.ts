@@ -8,17 +8,21 @@ export const PRODUCTS_ROUTES: Routes = [
   {
     path: 'new',
     component: ProductFormPageComponent,
+    data: { breadcrumb: 'Novo produto' },
   },
   {
     path: ':id/edit',
     component: ProductFormPageComponent,
+    data: { breadcrumb: 'Editar produto' },
   },
   {
     path: ':id',
     component: ProductDetailPageComponent,
+    data: { breadcrumb: 'Detalhes do produto' },
   },
   {
     path: '',
     component: ProductListPageComponent,
+    data: { breadcrumb: 'Produtos' },
   },
 ];
